@@ -97,16 +97,20 @@ export default function Repositories() {
         <RepoAdd loading={loading} />
       </RepoForm>
 
-      <RepoList title="Repositórios Favoritos">
-        {repositories.map((repo) => (
-          <RepoListItem
-            key={repo.name}
-            name={repo.name}
-            path={`/repositorio/${encodeURIComponent(repo.name)}`}
-            onClick={() => handleDelete(repo.name)}
-          />
-        ))}
-      </RepoList>
+      {repositories.length > 0 ? (
+        <RepoList title="Repositórios Favoritos">
+          {repositories.map((repo) => (
+            <RepoListItem
+              key={repo.name}
+              name={repo.name}
+              path={`/repositorio/${encodeURIComponent(repo.name)}`}
+              onClick={() => handleDelete(repo.name)}
+            />
+          ))}
+        </RepoList>
+      ) : (
+        ""
+      )}
     </RepoCard>
   );
 }

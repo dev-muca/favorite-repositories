@@ -9,9 +9,9 @@ export default function RepoOwner({ img_url, name, description }) {
         <FaArrowLeft size={20} />
       </Link>
       <img src={img_url} alt={name} width={120} height={120} className="border rounded-xl shadow" />
-      <div>
-        <h1 className="font-bold">{name.charAt(0).toUpperCase() + name.slice(1)}</h1>
-        <p className="text-sm text-zinc-400">{description}</p>
+      <div className="flex flex-col gap-2 pl-1">
+        <h1 className="font-medium text-3xl">{name.charAt(0).toUpperCase() + name.slice(1)}</h1>
+        <p className="text-base text-zinc-400">{description}</p>
       </div>
     </div>
   );

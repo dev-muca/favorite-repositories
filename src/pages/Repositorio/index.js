@@ -7,6 +7,7 @@ import RepoCard from "../../components/RepoCard";
 import RepoOwner from "../../components/RepoOwner";
 import RepoList from "../../components/RepoList";
 import RepoIssue from "../../components/RepoIssue";
+import RepoFilter from "../../components/RepoFilter";
 
 import { FaArrowCircleRight, FaArrowCircleLeft, FaSpinner } from "react-icons/fa";
 
@@ -16,6 +17,7 @@ export default function Repositorio() {
   const [repositorie, setRepositorie] = useState({});
   const [issues, setIssues] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [defaultFilter, setDefaultFilter] = useState([0, 0, 1]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
@@ -40,8 +42,6 @@ export default function Repositorio() {
       setRepositorie(repoData.data);
       setIssues(issuesData.data);
 
-      console.log(issuesData.data);
-
       setLoading(false);
     }
 
@@ -49,24 +49,29 @@ export default function Repositorio() {
   }, [repo, page]);
 
   useEffect(() => {
+    setLoading(true);
+
     async function loadIssues() {
       const repoName = repo;
 
       const response = await api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: "open",
+          state: filter,
           per_page: 5,
           page,
         },
       });
 
       setIssues(response.data);
+      setLoading(false);
     }
 
     loadIssues();
-  }, [repo, page]);
+  }, [repo, page, filter]);
 
   useEffect(() => {
+    setLoading(true);
+
     async function updateIssues() {
       const repoName = repo;
 
@@ -79,6 +84,7 @@ export default function Repositorio() {
       });
 
       setIssues(response.data);
+      setLoading(false);
     }
 
     updateIssues();
@@ -87,78 +93,48 @@ export default function Repositorio() {
   if (loading) {
     return (
       <RepoCard>
-        <div className="w-full flex justify-center items-center">
-          <FaSpinner className="animate-spin" />
-        </div>
+        <FaSpinner size={32} className="w-full flex justify-center items-center animate-spin" />
       </RepoCard>
     );
   }
+
+  const filterValue = (value) => {
+    setFilter(value);
+  };
 
   return (
     <RepoCard>
       <RepoOwner name={repositorie.name} img_url={repositorie.owner.avatar_url} description={repositorie.description} />
 
-      <RepoList title="Issues">
-        <div className="flex flex-row gap-4 mt-4">
-          Filtrar issues:
-          <label className="flex gap-1">
-            <input
-              type="radio"
-              name="filter"
-              value="open"
-              onChange={(e) => {
-                setFilter(e.target.value);
-              }}
-            />
-            <span>Abertas</span>
-          </label>
-          <label className="flex gap-1">
-            <input
-              type="radio"
-              name="filter"
-              value="close"
-              onChange={(e) => {
-                setFilter(e.target.value);
-              }}
-            />
-            <span>Fechadas</span>
-          </label>
-          <label className="flex gap-1">
-            <input
-              type="radio"
-              name="filter"
-              value="all"
-              onChange={(e) => {
-                setFilter(e.target.value);
-              }}
-              defaultChecked
-            />
-            <span>Todas</span>
-          </label>
-        </div>
+      {issues.length > 0 ? (
+        <RepoList title="Issues">
+          <RepoFilter filterValue={filterValue} setDefaultFilter={setDefaultFilter} checked={defaultFilter} />
 
-        {issues.map((issue) => (
-          <RepoIssue
-            key={issue.id}
-            img_url={issue.user.avatar_url}
-            name={issue.user.login}
-            title={issue.title}
-            url={issue.url}
-            status={issue.state}
-          />
-        ))}
+          {issues.map((issue) => (
+            <RepoIssue
+              key={issue.id}
+              img_url={issue.user.avatar_url}
+              name={issue.user.login}
+              title={issue.title}
+              url={issue.url}
+              status={issue.state}
+            />
+          ))}
 
-        <div className="w-full flex justify-between items-center">
-          <button onClick={() => handlePage("prev")} disabled={page < 1 ? 1 : 0}>
-            <FaArrowCircleLeft />
-          </button>
-          <span>{page}</span>
+          <div className="w-full flex justify-between items-center">
+            <button onClick={() => handlePage("prev")} disabled={page < 1 ? 1 : 0}>
+              <FaArrowCircleLeft />
+            </button>
+            <span>{page}</span>
 
-          <button onClick={() => handlePage("next")}>
-            <FaArrowCircleRight />
-          </button>
-        </div>
-      </RepoList>
+            <button onClick={() => handlePage("next")}>
+              <FaArrowCircleRight />
+            </button>
+          </div>
+        </RepoList>
+      ) : (
+        ""
+      )}
     </RepoCard>
   );
 }
