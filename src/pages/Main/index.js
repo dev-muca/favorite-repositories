@@ -92,7 +92,7 @@ export default function Repositories() {
           onChange={handleInputChange}
           error={alert}
           onClick={() => setAlert(false)}
-          placeholder="Informe um repositório"
+          placeholder="Informe um repositório, ex.: angular/angular"
         />
         <RepoAdd loading={loading} />
       </RepoForm>
