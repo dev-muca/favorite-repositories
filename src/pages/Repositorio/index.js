@@ -116,7 +116,7 @@ export default function Repositorio() {
               img_url={issue.user.avatar_url}
               name={issue.user.login}
               title={issue.title}
-              url={issue.url}
+              url={issue.html_url}
               status={issue.state}
             />
           ))}
